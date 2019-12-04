@@ -1,0 +1,7 @@
+#Python3
+Django==2.1.4
+gunicorn==19.9.0
+django-cors-headers==3.0.1
+PyMySQL==0.9.3
+requests==2.21.0
+easyserializer==0.2.15

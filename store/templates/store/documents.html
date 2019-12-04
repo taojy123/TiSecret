@@ -1,0 +1,116 @@
+{% extends "store/vue_base.html" %}
+
+
+{% block content %}
+  <div id="app">
+    <div>
+      <div style="float: left; width: 250px">
+        <el-menu default-active="" @select="menuSelect" style="height: 100vh;">
+          <div style="padding: 20px">
+            <img src="/static/logo.png" width="50px">
+            <span style="text-align: center; color: #003686; position: relative; top: -10px; font-size: 16px">康旗加密存档系统</span>
+          </div>
+
+          <el-menu-item index="documents">
+            <i class="el-icon-menu"></i>
+            <span slot="title">文档列表</span>
+          </el-menu-item>
+
+          <el-menu-item index="new">
+            <i class="el-icon-plus"></i>
+            <span slot="title">添加文档</span>
+          </el-menu-item>
+
+          <el-menu-item index="account">
+            <i class="el-icon-user-solid"></i>
+            <span slot="title">{{ user.username }}</span>
+          </el-menu-item>
+          <el-menu-item index="logout">
+            <i class="el-icon-s-release"></i>
+            <span slot="title">登出</span>
+          </el-menu-item>
+        </el-menu>
+      </div>
+
+      <div style="float: left; width: calc(100vw - 275px - 2 * 15px); padding: 15px">
+
+        <div id="documents" v-if="menu === 'documents'" >
+          <div class="documents-table">
+            <el-table :data="documents" border stripe>
+              <el-table-column prop="name" label="名称" sortable></el-table-column>
+              <el-table-column prop="updated_at" label="更新时间"></el-table-column>
+              <el-table-column prop="created_at" label="创建时间"></el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button round size="mini" type="primary" @click="view_document(scope.row.id)"><span>查看文档</span></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="loader" v-if="loading" style="text-align: center; margin: 20px">
+            <svg width="80px"  height="80px"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-cube" style="background: none;"><g transform="translate(25,25)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#ffb6bb" transform="scale(1.2581 1.2581)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="-0.3s" repeatCount="indefinite"></animateTransform></rect></g><g transform="translate(75,25)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#ffe691" transform="scale(1.35895 1.35895)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="-0.2s" repeatCount="indefinite"></animateTransform></rect></g><g transform="translate(25,75)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#95d5ee" transform="scale(1.0073 1.0073)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="0s" repeatCount="indefinite"></animateTransform></rect></g><g transform="translate(75,75)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#585872" transform="scale(1.00084 1.00084)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="-0.1s" repeatCount="indefinite"></animateTransform></rect></g></svg>
+          </div>
+        </div>
+
+        <div id="new" v-if="menu === 'new'">
+          ddd
+        </div>
+
+        <div id="new" v-if="menu === 'view'">
+          ddd
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block script %}
+  <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        return {
+          menu: '',
+          documents: [],
+          loading: true,
+          view_id: null,
+        }
+      },
+      mounted() {
+        this.fetchDocuments()
+      },
+      methods: {
+        menuSelect(index){
+            if (index === 'logout'){
+                top.location.href = '/documents/logout/'
+                return
+            }
+            this.menu = index
+            this.fetchDocuments()
+        },
+        fetchDocuments () {
+          this.loading = true
+          this.documents = []
+          $.ajax({
+              url: '/store/api/documents/',
+              type: 'get',
+              data: {},
+              success: (res) => {
+                  console.log(res)
+                  this.documents = res.rs
+                  this.loading = false
+              },
+          })
+        },
+        view_document (view_id) {
+          this.view_id = view_id
+          this.menu = 'view'
+        }
+      }
+    })
+  </script>
+{% endblock %}
+
