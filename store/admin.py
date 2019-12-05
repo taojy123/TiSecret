@@ -5,6 +5,6 @@ from store import models
 
 @admin.register(models.Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'name', 'content', 'updated_at', 'created_at']
+    list_display = ['id', 'user', 'name', 'updated_at', 'created_at']
     list_filter = ['user']
 
