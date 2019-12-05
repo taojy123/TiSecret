@@ -61,18 +61,10 @@
       },
       methods:{
         onSubmit() {
-            var username = $('[name=username]').val()
-            var password = $('[name=password]').val()
-            var url = "{{ sso_url }}?validity=-2&fine_username=" + username + "&fine_password=" + password
-            $.ajax({
-                url: url,//单点登录的管理平台报表服务器
-                timeout: 2000,//超时时间（单位：毫秒）
-                dataType:"jsonp",//跨域采用jsonp方式
-                jsonp:"callback",
-                complete: function () {
-                    $('form.el-form').submit()
-                },
-            })
+            var passmd5 = md5(this.password)
+            localStorage.setItem('username', this.username)
+            localStorage.setItem('passmd5', passmd5)
+            $('form.el-form').submit()
             // $.ajax({
             //     url: 'http://127.0.0.1:9000',
             //     timeout: 1000,

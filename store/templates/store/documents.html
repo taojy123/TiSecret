@@ -5,23 +5,23 @@
   <div id="app">
     <div>
       <div style="float: left; width: 250px">
-        <el-menu default-active="" @select="menuSelect" style="height: 100vh;">
+        <el-menu default-active="{{ menu }}" @select="menuSelect" style="height: 100vh;">
           <div style="padding: 20px">
             <img src="/static/logo.png" width="50px">
             <span style="text-align: center; color: #003686; position: relative; top: -10px; font-size: 16px">康旗加密存档系统</span>
           </div>
-
-          <el-menu-item index="documents">
-            <i class="el-icon-menu"></i>
-            <span slot="title">文档列表</span>
-          </el-menu-item>
 
           <el-menu-item index="new">
             <i class="el-icon-plus"></i>
             <span slot="title">添加文档</span>
           </el-menu-item>
 
-          <el-menu-item index="account">
+          <el-menu-item index="documents">
+            <i class="el-icon-menu"></i>
+            <span slot="title">文档列表</span>
+          </el-menu-item>
+
+          <el-menu-item index="documents">
             <i class="el-icon-user-solid"></i>
             <span slot="title">{{ user.username }}</span>
           </el-menu-item>
@@ -35,29 +35,47 @@
       <div style="float: left; width: calc(100vw - 275px - 2 * 15px); padding: 15px">
 
         <div id="documents" v-if="menu === 'documents'" >
+          <h3 style="text-align: center">文档列表</h3>
           <div class="documents-table">
             <el-table :data="documents" border stripe>
               <el-table-column prop="name" label="名称" sortable></el-table-column>
-              <el-table-column prop="updated_at" label="更新时间"></el-table-column>
-              <el-table-column prop="created_at" label="创建时间"></el-table-column>
+              <el-table-column prop="updated_time" label="更新时间" sortable></el-table-column>
+              <el-table-column prop="created_time" label="创建时间" sortable></el-table-column>
               <el-table-column label="操作">
                 <template slot-scope="scope">
-                  <el-button round size="mini" type="primary" @click="view_document(scope.row.id)"><span>查看文档</span></el-button>
+                  <el-button round size="mini" type="primary" @click="view(scope.row.id)"><span>查看文档</span></el-button>
                 </template>
               </el-table-column>
             </el-table>
           </div>
-          <div class="loader" v-if="loading" style="text-align: center; margin: 20px">
-            <svg width="80px"  height="80px"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-cube" style="background: none;"><g transform="translate(25,25)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#ffb6bb" transform="scale(1.2581 1.2581)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="-0.3s" repeatCount="indefinite"></animateTransform></rect></g><g transform="translate(75,25)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#ffe691" transform="scale(1.35895 1.35895)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="-0.2s" repeatCount="indefinite"></animateTransform></rect></g><g transform="translate(25,75)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#95d5ee" transform="scale(1.0073 1.0073)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="0s" repeatCount="indefinite"></animateTransform></rect></g><g transform="translate(75,75)"><rect ng-attr-x="" ng-attr-y="" ng-attr-width="" ng-attr-height="" ng-attr-fill="" x="-17.5" y="-17.5" width="35" height="35" fill="#585872" transform="scale(1.00084 1.00084)"><animateTransform attributeName="transform" type="scale" calcMode="spline" values="1.5;1" keyTimes="0;1" dur="1s" keySplines="0 0.5 0.5 1" begin="-0.1s" repeatCount="indefinite"></animateTransform></rect></g></svg>
-          </div>
         </div>
 
         <div id="new" v-if="menu === 'new'">
-          ddd
+          <h3 style="text-align: center">添加文档</h3>
+          <el-form ref="form" id="new-form" method="post" action="/store/new_document/">
+            <el-form-item >
+              <el-input name="name" v-model="newName" placeholder="请输入文档名称"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-input name="content" v-model="newContent" type="textarea" :rows="20" placeholder="请输入文档内容"></el-input>
+            </el-form-item>
+            <el-form-item style="text-align: center">
+              <el-button type="primary" @click="onNewSubmit">加密提交保存</el-button>
+            </el-form-item>
+          </el-form>
         </div>
 
         <div id="new" v-if="menu === 'view'">
-          ddd
+          <h3 style="text-align: center">{% templatetag openvariable %}viewDocument.name{% templatetag closevariable %}</h3>
+          <el-form ref="form" id="update-form" method="post" action="/store/update_document/">
+            <input type="hidden" name="id" :value="viewDocument.id">
+            <el-form-item>
+              <el-input name="content" v-model="viewContent" type="textarea" :rows="30" placeholder="请输入文档内容"></el-input>
+            </el-form-item>
+            <el-form-item style="text-align: center">
+              <el-button type="primary" @click="onUpdateSubmit">修改保存</el-button>
+            </el-form-item>
+          </el-form>
         </div>
 
       </div>
@@ -73,26 +91,44 @@
       el: '#app',
       data: function() {
         return {
-          menu: '',
+          menu: '{{ menu }}',
           documents: [],
-          loading: true,
-          view_id: null,
+          newName: '',
+          newContent: '',
+          viewDocument: {},
+          viewContent: '',
+          viewId: null,
+          username: localStorage.getItem('username'),
+          passmd5: localStorage.getItem('passmd5'),
         }
       },
       mounted() {
-        this.fetchDocuments()
+        this.fetch()
+        if (this.username !== '{{ request.user.username }}') {
+            alert('用户状态不正确')
+        }
+        if (!this.passmd5) {
+            alert('用户数据不正确')
+        }
+        {% if msg %}
+          this.$message({
+            showClose: true,
+            message: '{{ msg }}',
+            type: 'success'
+          });
+        {% endif %}
       },
       methods: {
         menuSelect(index){
-            if (index === 'logout'){
-                top.location.href = '/documents/logout/'
-                return
-            }
-            this.menu = index
-            this.fetchDocuments()
+          if (index === 'logout'){
+              localStorage.clear()
+              top.location.href = '/store/logout/'
+              return
+          }
+          this.menu = index
+          this.fetch()
         },
-        fetchDocuments () {
-          this.loading = true
+        fetch () {
           this.documents = []
           $.ajax({
               url: '/store/api/documents/',
@@ -101,14 +137,51 @@
               success: (res) => {
                   console.log(res)
                   this.documents = res.rs
-                  this.loading = false
               },
           })
         },
-        view_document (view_id) {
-          this.view_id = view_id
+        view (viewId) {
+          this.viewId = viewId
           this.menu = 'view'
-        }
+          $.ajax({
+              url: '/store/api/document/' + viewId + '/',
+              type: 'get',
+              data: {},
+              success: (data) => {
+                  console.log(data)
+                  this.viewDocument = data
+                  var t = data.content
+                  var items = t.split('@@')
+                  if (items.length !== 3) {
+                    alert('文档数据异常')
+                  } else {
+                    t = items[2]
+                    t = Base64.decode(t)
+                    t = rc4(t, this.passmd5)
+                  }
+                  var content = t
+                  this.viewContent = content
+              },
+          })
+        },
+        onNewSubmit () {
+          if (!this.newContent.startsWith('@@')) {
+            var t = rc4(this.newContent, this.passmd5)
+            t = Base64.encode(t)
+            t = '@@' + this.username + '@@' + t
+            $('[name=content]').val(t)  // can not use this.newContent = t because it is async
+          }
+          $('#new-form').submit()
+        },
+        onUpdateSubmit () {
+          if (!this.viewContent.startsWith('@@')) {
+            var t = rc4(this.viewContent, this.passmd5)
+            t = Base64.encode(t)
+            t = '@@' + this.username + '@@' + t
+            $('[name=content]').val(t)  // can not use this.viewContent = t because it is async
+          }
+          $('#update-form').submit()
+        },
       }
     })
   </script>

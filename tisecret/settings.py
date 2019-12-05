@@ -34,6 +34,8 @@ ALLOWED_HOSTS = ['*']
 
 # AUTH_USER_MODEL = 'store.User'
 
+LOGIN_URL = '/store/login/'
+
 # Application definition
 
 INSTALLED_APPS = [

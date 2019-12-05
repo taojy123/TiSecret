@@ -14,4 +14,11 @@ class Document(SerializeableObject, models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def updated_time(self):
+        return self.updated_at.strftime('%Y-%m-%d %H:%M')
+
+    @property
+    def created_time(self):
+        return self.created_at.strftime('%Y-%m-%d %H:%M')
 
