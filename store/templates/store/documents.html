@@ -21,6 +21,11 @@
             <span slot="title">文档列表</span>
           </el-menu-item>
 
+          <el-menu-item index="crypt">
+            <i class="el-icon-view"></i>
+            <span slot="title">加密解密</span>
+          </el-menu-item>
+
           <el-menu-item index="documents">
             <i class="el-icon-user-solid"></i>
             <span slot="title">{{ user.username }}</span>
@@ -78,6 +83,13 @@
           </el-form>
         </div>
 
+        <div id="new" v-if="menu === 'crypt'">
+          <h3 style="text-align: center">加密解密</h3>
+          <el-input v-model="cryptKey" placeholder="请输入密钥"></el-input>
+          <el-input v-model="cryptContent" type="textarea" :rows="20" placeholder="请输入内容"></el-input>
+          <el-button type="primary" @click="cryptHandle">加密/解密</el-button>
+        </div>
+
       </div>
 
     </div>
@@ -100,6 +112,8 @@
           viewId: null,
           username: localStorage.getItem('username'),
           passmd5: localStorage.getItem('passmd5'),
+          cryptKey: '',
+          cryptContent: '',
         }
       },
       mounted() {
@@ -181,6 +195,26 @@
             $('[name=content]').val(t)  // can not use this.viewContent = t because it is async
           }
           $('#update-form').submit()
+        },
+        cryptHandle () {
+          if (this.cryptContent.startsWith('@@')) {
+            // rc4/base64 decrypt
+            items = this.cryptContent.split('@@')
+            if (items.length !== 3) {
+              alert('文档数据异常')
+              return
+            }
+            t = items[2]
+            t = Base64.decode(t)
+            t = rc4(t, this.cryptKey)
+            this.cryptContent = t
+          } else {
+            // rc4/base64 encrypt
+            t = rc4(this.cryptContent, this.cryptKey)
+            t = Base64.encode(t)
+            t = '@@encrypted@@' + t
+            this.cryptContent = t
+          }
         },
       }
     })
