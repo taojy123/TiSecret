@@ -20,10 +20,11 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.static import serve
 
-from store.views import redirect
+from store.views import redirect, chip
 
 urlpatterns = [
     path('', redirect, name='index'),
+    path('chip/<str:token>/', chip, name='chip'),
     path('store/', include('store.urls')),
     path('admin/', admin.site.urls),
 ]

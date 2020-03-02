@@ -23,5 +23,5 @@ ENTRYPOINT ["entrypoint.sh"]
 
 # git pull
 # docker build -t tisecret .
-# docker run -p 6003:8000 -it --rm tisecret
-# docker run -p 6003:8000 --name tisecret -d tisecret
+# docker run -p 6003:8000 -v `pwd`/data.db:/workspace/data.db -it --rm tisecret
+# docker run -p 6003:8000 -v `pwd`/data.db:/workspace/data.db --name tisecret -d tisecret

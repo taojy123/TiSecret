@@ -87,8 +87,7 @@ def update_document(request):
     return HttpResponseRedirect('/store/documents/?code=c')
     
 
-def chip(request):
-    chip_token = request.GET.get('token', '')
+def chip(request, chip_token):
     menu = 'crypt'
     return render(request, 'store/documents.html', locals())
 
