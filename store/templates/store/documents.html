@@ -119,10 +119,10 @@
       mounted() {
         this.fetch()
         if (this.username !== '{{ request.user.username }}') {
-            alert('用户状态不正确')
+            {#alert('用户状态不正确')#}
         }
         if (!this.passmd5) {
-            alert('用户数据不正确')
+            {#alert('用户数据不正确')#}
         }
         {% if msg %}
           this.$message({
@@ -219,9 +219,13 @@
             this.cryptContent = t
           } else {
             // rc4/base64 encrypt
-            token = this.chipToken || encrypted
+            if (!this.cryptKey) {
+              alert('请填写加密密钥')
+              return
+            }
             t = rc4(this.cryptContent, this.cryptKey)
             t = Base64.encode(t)
+            token = this.chipToken || encrypted
             t = '@@' + token +  '@@' + t
             this.cryptContent = t
           }
