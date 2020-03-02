@@ -24,7 +24,7 @@ from store.views import redirect, chip
 
 urlpatterns = [
     path('', redirect, name='index'),
-    path('chip/<str:token>/', chip, name='chip'),
+    path('chip/<str:chip_token>/', chip, name='chip'),
     path('store/', include('store.urls')),
     path('admin/', admin.site.urls),
 ]
