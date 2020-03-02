@@ -22,3 +22,7 @@ class Document(SerializeableObject, models.Model):
     def created_time(self):
         return self.created_at.strftime('%Y-%m-%d %H:%M')
 
+
+class Chip(SerializeableObject, models.Model):
+    token = models.CharField(max_length=100, unique=True)
+    content = models.TextField(blank=True)

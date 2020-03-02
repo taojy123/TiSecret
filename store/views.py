@@ -7,10 +7,10 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 
-from store.models import Document
+from store.models import Document, Chip
 
 REPORT_DIR_MAP = {
     '借呗': 'jiebei_report',
@@ -85,6 +85,12 @@ def update_document(request):
     doc.content = content
     doc.save()
     return HttpResponseRedirect('/store/documents/?code=c')
+    
+
+def chip(request):
+    chip_token = request.GET.get('token', '')
+    menu = 'crypt'
+    return render(request, 'store/documents.html', locals())
 
 
 @login_required
@@ -109,5 +115,22 @@ def api_document(request, document_id):
         del r['user']
         return JsonResponse(r)
     return HttpResponseNotFound()
+
+
+def api_chip(request):
+    if request.method == 'GET':
+        token = request.GET.get('token')
+        chip = get_object_or_404(Chip, token=token)
+        return JsonResponse(chip.to_dict())
+
+    token = request.POST.get('token')
+    content = request.POST.get('content')
+    if not content.startswith('@@'):
+        return HttpResponseBadRequest('请先加密后保存')
+    
+    chip, created = Chip.objects.get_or_create(token=token)
+    chip.content = content
+    chip.save()
+    return JsonResponse(chip.to_dict())
     
 

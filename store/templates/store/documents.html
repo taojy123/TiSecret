@@ -82,10 +82,11 @@
         </div>
 
         <div id="new" v-if="menu === 'crypt'">
-          <h3 style="text-align: center">加密解密</h3>
-          <el-input v-model="cryptKey" placeholder="请输入密钥"></el-input>
+          <h3 style="text-align: center">加密解密 {{ chip_token }}</h3>
           <el-input v-model="cryptContent" type="textarea" :rows="20" placeholder="请输入内容"></el-input>
+          <el-input v-model="cryptKey" placeholder="请输入密钥"></el-input>
           <el-button type="primary" @click="cryptHandle">加密/解密</el-button>
+          <el-button type="warning" @click="cryptSave" v-if="chipToken">保存</el-button>
         </div>
 
       </div>
@@ -112,6 +113,7 @@
           passmd5: localStorage.getItem('passmd5'),
           cryptKey: '',
           cryptContent: '',
+          chipToken: '{{ chip_token }}',
         }
       },
       mounted() {
@@ -151,6 +153,15 @@
                   this.documents = res.rs
               },
           })
+          if (this.chipToken){
+            $.ajax({
+                url: '/store/api/chip/?token=' + this.chipToken,
+                type: 'get',
+                success: (res) => {
+                    this.cryptContent = res.content
+                },
+            })
+          }
         },
         view (viewId) {
           this.viewId = viewId
@@ -208,11 +219,29 @@
             this.cryptContent = t
           } else {
             // rc4/base64 encrypt
+            token = this.chipToken || encrypted
             t = rc4(this.cryptContent, this.cryptKey)
             t = Base64.encode(t)
-            t = '@@encrypted@@' + t
+            t = '@@' + token +  '@@' + t
             this.cryptContent = t
           }
+        },
+        cryptSave () {
+          if (!this.cryptContent.startsWith('@@')) {
+              alert('请先加密后保存')
+              return
+          }
+          $.ajax({
+              url: '/store/api/chip/',
+              type: 'post',
+              data: {
+                  token: this.chipToken,
+                  content: this.cryptContent,
+              },
+              success: (res) => {
+                  alert('保存成功')
+              },
+          })
         },
       }
     })
