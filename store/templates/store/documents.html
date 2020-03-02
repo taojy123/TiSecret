@@ -208,6 +208,10 @@
         cryptHandle () {
           if (this.cryptContent.startsWith('@@')) {
             // rc4/base64 decrypt
+            if (!this.cryptKey) {
+              alert('请填写密钥')
+              return
+            }
             items = this.cryptContent.split('@@')
             if (items.length !== 3) {
               alert('文档数据异常')
@@ -220,7 +224,7 @@
           } else {
             // rc4/base64 encrypt
             if (!this.cryptKey) {
-              alert('请填写加密密钥')
+              alert('请填写密钥')
               return
             }
             t = rc4(this.cryptContent, this.cryptKey)
