@@ -22,5 +22,5 @@ ENTRYPOINT ["entrypoint.sh"]
 
 
 # docker build -t tisecret .
-# docker run -p 8000:8000 -it --rm tisecret
-# docker run -p 8000:8000 --name tisecret -d tisecret
+# docker run -p 6003:8000 -it --rm tisecret
+# docker run -p 6003:8000 --name tisecret -d tisecret
