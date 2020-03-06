@@ -229,7 +229,7 @@
             }
             t = rc4(this.cryptContent, this.cryptKey)
             t = Base64.encode(t)
-            token = this.chipToken || encrypted
+            token = this.chipToken || 'encrypted'
             t = '@@' + token +  '@@' + t
             this.cryptContent = t
           }
