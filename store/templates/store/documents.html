@@ -73,7 +73,7 @@
           <el-form ref="form" id="update-form" method="post" action="/store/update_document/">
             <input type="hidden" name="id" :value="viewDocument.id">
             <el-form-item>
-              <el-input name="content" v-model="viewContent" type="textarea" :rows="30" placeholder="请输入文档内容"></el-input>
+              <el-input name="content" v-model="viewContent" type="textarea" style="height: 80vh" placeholder="请输入文档内容"></el-input>
             </el-form-item>
             <el-form-item style="text-align: center">
               <el-button type="primary" @click="onUpdateSubmit">修改保存</el-button>
