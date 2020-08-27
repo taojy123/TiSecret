@@ -1,5 +1,13 @@
 {% extends "store/vue_base.html" %}
 
+{% block style %}
+  <style>
+    .el-textarea textarea {
+      height: 80vh;
+    }
+  </style>
+{% endblock %}
+
 
 {% block content %}
   <div id="app">
@@ -60,7 +68,7 @@
               <el-input name="name" v-model="newName" placeholder="请输入文档名称"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-input name="content" v-model="newContent" type="textarea" style="height: 80vh" :autosize="true" placeholder="请输入文档内容"></el-input>
+              <el-input name="content" v-model="newContent" type="textarea" placeholder="请输入文档内容"></el-input>
             </el-form-item>
             <el-form-item style="text-align: center">
               <el-button type="primary" @click="onNewSubmit">加密提交保存</el-button>
@@ -73,7 +81,7 @@
           <el-form ref="form" id="update-form" method="post" action="/store/update_document/">
             <input type="hidden" name="id" :value="viewDocument.id">
             <el-form-item>
-              <el-input name="content" v-model="viewContent" type="textarea" style="height: 80vh" :autosize="true" placeholder="请输入文档内容"></el-input>
+              <el-input name="content" v-model="viewContent" type="textarea" placeholder="请输入文档内容"></el-input>
             </el-form-item>
             <el-form-item style="text-align: center">
               <el-button type="primary" @click="onUpdateSubmit">修改保存</el-button>
@@ -83,7 +91,7 @@
 
         <div id="new" v-if="menu === 'crypt'">
           <h3 style="text-align: center">加密解密 {{ chip_token }}</h3>
-          <el-input v-model="cryptContent" type="textarea" style="height: 80vh" :autosize="true" placeholder="请输入内容"></el-input>
+          <el-input v-model="cryptContent" type="textarea" placeholder="请输入内容"></el-input>
           <el-input v-model="cryptKey" placeholder="请输入密钥"></el-input>
           <el-button type="primary" @click="cryptHandle">加密/解密</el-button>
           <el-button type="warning" @click="cryptSave" v-if="chipToken">保存</el-button>
